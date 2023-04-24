@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Minesweeper Game</title>
+<meta charset="UFT-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+</head>
+<style>
+    .tileDiv{
+        width: 400px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .tile{
+        height: 38px;
+        width: 38px;
+        border: solid 1px darkblue;
+        background-color: grey;
+    }
+</style>
+<body>
+<h2><b>Minesweeper</b></h2>
+<div id="grid" class="tileDiv"></div>
+</body>
+<script>
+let size = 100;
+let playTiles = document.getElementById("grid");
+let MinePlaces = [];
+let MineNumber = 10;
+let Remaining = [];
+for (let i=0;i<size;i++){
+    let tile = document.createElement('div');
+    tile.classList.add('tile');
+    tile.id = i;
+    tile.addEventListener("click", changeColour);
+    playTiles.append(tile);
+
+    MinePlaces.push(i);
+    Remaining.push(i);
+}
+function changeColour(){
+    let a = this.id;
+    document.getElementById(`${a}`).style.backgroundColor = "red";
+    console.log(a);           
+    if(Remaining.indexOf(a)>-1){
+        let index = Remaining.indexOf(a);
+        Remaining.splice(index,1);
+    }
+    console.log(Remaining);
+}
+var shuffle = function (array) {
+
+var currentIndex = array.length;
+var temporaryValue, randomIndex;
+
+while (0 !== currentIndex) {    
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;   
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+}
+};
+
+shuffle(MinePlaces);
+for(let i=0; i<MineNumber; i++){
+    let a = MinePlaces[i];
+    document.getElementById(`${a}`).style.backgroundColor = "orange";
+    if(Remaining.indexOf(a)>-1){
+        let index = Remaining.indexOf(a);
+        Remaining.splice(index,1);
+    }
+}
+
+</script>
+</html>
