@@ -20,6 +20,9 @@
 </style>
 <body>
 <h2><b>Minesweeper</b></h2>
+<div id="face">&nbsp;</div>
+<div id="remainDIV">&nbsp;</div>
+<br>
 <div id="grid" class="tileDiv"></div>
 <button id="start" onclick="start()">Start</button>
 <br>
@@ -27,7 +30,8 @@
 <button id="moreM" onclick="changeM(1)">More Mines</button>
 <br>
 <div id="mine#">10</div>
-<div id="defeated"></div>
+<div id="defeated">&nbsp;</div>
+<button id="restart" onclick="window.location.reload(true)">Reload</button>
 </body>
 <script>
 let size = 100;
@@ -35,6 +39,7 @@ let playTiles = document.getElementById("grid");
 let MinePlaces = [];
 let MineNumber = 10;
 let Remaining = [];
+let hintnumber = [];
 for (let i=0;i<size;i++){
     let tile = document.createElement('div');
     tile.classList.add('tile');
@@ -44,18 +49,30 @@ for (let i=0;i<size;i++){
 
     MinePlaces.push(i);
     Remaining.push(i);
+    hintnumber.push(0);
+
 }
 function changeColour(){
     if(defeated==false&&startV==true){
     let a = this.id;
     document.getElementById(`${a}`).style.backgroundColor = "aqua";
-    console.log(this.id);           
+    //console.log(this.id);           
     for(let i=0;i<Remaining.length;i++){
         if(a==Remaining[i]){
             Remaining.splice(i,1);
         }
     }
-    console.log(Remaining.length);
+    if(hintnumber[a]>0){
+        let text = hintnumber[a];
+        document.getElementById(`${a}`).innerHTML = text;
+    }
+    document.getElementById("remainDIV").innerHTML = Remaining.length;
+    if(Remaining.length<1){        
+        defeated = true;
+        document.getElementById("defeated").innerHTML = "WINNER!";
+        document.getElementById("face").innerHTML = "&#128526";
+    }
+    //console.log(Remaining.length);
     }
 }
 var shuffle = function (array) {
@@ -78,68 +95,90 @@ let MineFinal = [];
 let startV = false;
 function start(){
     if(startV==false){
+        document.getElementById("face").innerHTML = "&#128512";
         for(let i=0; i<MineNumber; i++){
         let a = MinePlaces[i];
-        
-        document.getElementById(`${a}`).style.backgroundColor = "orange";        
+        MineFinal.push(a);
+        //document.getElementById(`${a}`).style.backgroundColor = "orange";        
         document.getElementById(`${a}`).addEventListener("click", defeat);
         document.getElementById(`${a}`).innerHTML = "";       
               
         if(Remaining.indexOf(a)>-1){
-            let index = Remaining.indexOf(a);
-            Remaining.splice(index,1);
-            MineFinal.push(index);
+            let index = Remaining.indexOf(a);            
+            Remaining.splice(index,1);            
         }        
         }   
-
-        for(let i=0;i<MineNumber;i++){
-        let b = MineFinal[i];
-            //filter div to remove numbering mines
-        if(b>0&&b<99){
-        let r = b + 1;
-        let l = b - 1;
-        if(MineFinal.indexOf(r)==-1){
-            document.getElementById(`${r}`).innerHTML = "1";
-        }
-        if(MineFinal.indexOf(l)==-1){
-        document.getElementById(`${l}`).innerHTML = "1";
-        }
-        }
-        if(b>9){
-            let u = b-10;
-            if(MineFinal.indexOf(u)==-1){
-            document.getElementById(`${u}`).innerHTML = "1";
-            }            
-        }
-        if(b<90){
-            let d = b+10;
-            if(MineFinal.indexOf(d)==-1){
-            document.getElementById(`${d}`).innerHTML = "1";
-            }
-        }
-            
-    }
-        
+        hints();
     }    
+    
     startV=true;
-    console.log(MineFinal)
-    console.log(startV);
+    //console.log(MineFinal)
+    //console.log(startV);
 }
 function changeM(diff){
     if(startV==false){
         MineNumber += diff;
-        console.log(MineNumber);
+        if(MineNumber>35){
+            MineNumber = 35;
+        }
+        if(MineNumber<1){
+            MineNumber = 1;
+        }
+        //console.log(MineNumber);
     }
     document.getElementById("mine#").innerHTML = MineNumber;
 }
 let defeated = false;
 function defeat (){
+    if(defeated==false){
     for(let i=0; i<MineNumber; i++){
         let a = MinePlaces[i];
         document.getElementById(`${a}`).style.backgroundColor = "black";
     }
     document.getElementById("defeated").innerHTML = "DEFEATED";
+    document.getElementById("face").innerHTML = "&#128565";
     defeated = true;
+    }
+}
+function hints(){
+    for(let i=0;i<MineNumber;i++){
+        let b = MineFinal[i];
+
+        if(b>0 && b%10>0){        
+        let l = b - 1;
+        hintnumber[l] += 1;
+        }
+        if(b<99){
+            if((b-9)%10>0){
+                let r = b + 1;
+                hintnumber[r] += 1; 
+            }
+            if(b<9){
+                let r = b + 1;
+                hintnumber[r] += 1;
+            }
+        }
+        
+        if(b>9){
+        let u = b-10;
+        hintnumber[u] += 1;
+        }
+        if(b<90){
+        let d = b+10;
+        hintnumber[d] += 1;
+        }      
+    }
+    for(let i=0;i<MineNumber;i++){
+        let b = MineFinal[i];
+        hintnumber[b] = 0;
+    }
+    /*for(let i=0;i<size;i++){
+        if(hintnumber[i]>0){
+            let text = hintnumber[i];
+            document.getElementById(`${i}`).innerHTML = text;
+        }
+    }*/
+    //console.log(hintnumber);
 }
 </script>
 </html>
